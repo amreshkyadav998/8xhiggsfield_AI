@@ -53,3 +53,21 @@ Capture test 2 received, Amresh: the 8x assignment is noted and I'm ready for th
   edited. The hook now falls back to `claude-sonnet-5-5`; the RESPONSE entries carry the real model.
 - Before the repo existed, the planning conversation took place in a Claude Code session started
   outside the repo, so it was not captured. It covered only reading the brief.
+
+## Issues found later in the build session (93c72ce7)
+
+- **Entry numbering gap.** Prompt 2 pasted this spec, whose example log contains literal
+  `[LOG_ENTRY ...]` lines. The hook counted every `[LOG_ENTRY` match in the file, so it numbered
+  the reply to prompt 2 as `RESPONSE num=4`. The next prompt became `num=5`, and there is no
+  `num=3`. No prompt or response is missing. The entries were left as written. Found during an
+  audit at prompt 16, which pasted the spec again.
+  - **Fix** in `.claude/hooks/capture.mjs`: only markers at the start of a line that carry this
+    session's id count, and new numbers continue from the highest existing number. Tested on copies
+    of the log (LF and CRLF) before it went live.
+- **Author handle.** The hook's default was `amreshky998`; the GitHub handle is `amreshkyadav998`.
+  The default is fixed, and the hook now writes the handle into the header's `author` field and
+  `Session:` line. The entries are unchanged.
+- **Model switch is visible.** Entries before the switch say `claude-sonnet-5-5`, and entries after
+  it say `claude-opus-5-5`. The header `model:` is the session's first model.
+- **Interrupted responses.** A few turns were cut off mid-response by a safety filter. Their RESPONSE
+  entries hold whatever final text the Stop hook could read, unedited.
