@@ -23,7 +23,7 @@ function Form() {
 
   const input = "w-full rounded-lg border border-line bg-black/40 p-3 text-sm outline-none focus:border-accent";
   return (
-    <form onSubmit={submit} className="mx-auto mt-16 w-full max-w-sm space-y-4 rounded-2xl border border-line bg-panel p-6">
+    <form onSubmit={submit} className="mx-4 mt-10 space-y-4 rounded-2xl border border-line bg-panel p-6 sm:mx-auto sm:mt-16 sm:w-full sm:max-w-sm">
       <h1 className="text-xl font-bold">{mode === "signup" ? "Create your account" : "Welcome back"}</h1>
       <p className="text-xs text-mute">Demo: accounts live in this browser only. You get 50 free credits.</p>
       {mode === "signup" && <input className={input} placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />}

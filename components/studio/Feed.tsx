@@ -61,7 +61,7 @@ function Tile({ item, onOpen, onReuse }: { item: Item; onOpen: () => void; onReu
           <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-10 opacity-0 transition-opacity group-hover:opacity-100">
             <p className="line-clamp-2 text-xs">{job.prompt}</p>
           </div>
-          <div className="absolute right-2 top-2 flex gap-1.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+          <div className="absolute right-2 top-2 flex gap-1.5 transition-opacity focus-within:opacity-100 group-hover:opacity-100 [@media(hover:hover)]:opacity-0">
             <button onClick={() => toggleLike(key)} aria-label={m?.liked ? "Unlike" : "Like"} className={`${iconBtn} ${m?.liked ? "text-pink-400" : ""}`}>
               {m?.liked ? "♥" : "♡"}
             </button>
@@ -114,7 +114,7 @@ function Lightbox({ items, index, onClose, onReuse }: { items: Item[]; index: nu
 
   return (
     <div className="fixed inset-0 z-[60] flex bg-black/95 max-md:flex-col" role="dialog" aria-modal aria-label="Preview">
-      <div className="relative flex flex-1 items-center justify-center p-6" onClick={onClose}>
+      <div className="relative flex min-h-0 flex-1 items-center justify-center p-3 md:p-6" onClick={onClose}>
         <div className="h-full max-h-[86vh] max-w-full overflow-hidden rounded-xl" style={{ aspectRatio: ratioBox(job.ratio).css }} onClick={(e) => e.stopPropagation()}>
           {job.source ? (
             <video src={job.source} controls autoPlay loop playsInline className="h-full w-full object-contain" style={{ filter }} />
@@ -133,7 +133,7 @@ function Lightbox({ items, index, onClose, onReuse }: { items: Item[]; index: nu
           </button>
         )}
       </div>
-      <aside className="w-full shrink-0 overflow-y-auto border-l border-line bg-[#0f0f12] p-6 md:w-96">
+      <aside className="w-full shrink-0 overflow-y-auto border-line bg-[#0f0f12] p-5 max-md:max-h-[45vh] max-md:border-t md:w-96 md:border-l md:p-6">
         <div className="flex items-center justify-between">
           <span className="text-sm text-mute">
             {i + 1} / {items.length}

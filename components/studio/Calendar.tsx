@@ -32,7 +32,7 @@ export default function Calendar({ from, to, onChange }: { from?: number; to?: n
   const shift = (n: number) => setView(new Date(view.getFullYear(), view.getMonth() + n, 1));
 
   return (
-    <div className="w-72">
+    <div className="mx-auto w-full max-w-72">
       <div className="mb-2 flex items-center justify-between rounded-xl border border-line px-2 py-1.5">
         <button onClick={() => shift(-1)} className="px-2 text-mute hover:text-white" aria-label="Previous month">
           ‹

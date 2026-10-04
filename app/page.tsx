@@ -79,18 +79,18 @@ export default function Explore() {
 
       {/* 2. Promo + tools */}
       <section className="mt-12 grid gap-4 xl:grid-cols-[1.45fr_2fr]">
-        <div className="relative min-h-80 overflow-hidden rounded-2xl">
+        <div className="relative min-h-[22rem] overflow-hidden rounded-2xl">
           <div className="absolute inset-0">
             <Media item={byTopic("mountain", 0, "video")} ratio="16:9" />
           </div>
-          <div className="absolute inset-0 flex flex-col justify-between bg-gradient-to-r from-black/70 via-black/30 to-transparent p-7">
+          <div className="absolute inset-0 flex flex-col justify-between bg-gradient-to-r from-black/70 via-black/30 to-transparent p-5 sm:p-7">
             <div>
-              <div className="text-4xl font-black uppercase leading-[0.95] md:text-5xl">Unlimited Nano Pro</div>
-              <div className="text-4xl font-black uppercase leading-[0.95] text-accent md:text-5xl">With personal 50% off</div>
+              <div className="text-3xl font-black uppercase leading-[0.95] sm:text-4xl md:text-5xl">Unlimited Nano Pro</div>
+              <div className="text-3xl font-black uppercase leading-[0.95] text-accent sm:text-4xl md:text-5xl">With personal 50% off</div>
               <p className="mt-3 text-white/80">7-day unlimited Nano Pro, Soul and Kinetic</p>
             </div>
             <div className="relative w-fit">
-              <Link href="/pricing" className={`${lime} px-16 text-lg`}>
+              <Link href="/pricing" className={`${lime} px-8 text-lg sm:px-16`}>
                 Get with 50% OFF
               </Link>
               <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-pink-600 px-2 py-0.5 text-xs font-semibold">
@@ -129,7 +129,7 @@ export default function Explore() {
         <div className="relative px-6 py-16 text-center">
           <span className="rounded-full border border-accent/40 bg-accent/10 px-4 py-1.5 text-sm font-semibold text-accent">🎁 Try Free</span>
           <div className="mt-6 text-xl font-black uppercase">AI Influencer</div>
-          <h2 className="mt-2 text-5xl font-black uppercase leading-none tracking-tight md:text-7xl">
+          <h2 className="mt-2 text-[2rem] font-black uppercase leading-none tracking-tight sm:text-5xl md:text-7xl">
             Build your next
             <br />
             <span className="text-white/60">hype machine</span>
@@ -145,11 +145,11 @@ export default function Explore() {
       <Masonry id="vfx" title="Visual effects" sub="Big-budget visual effects, from explosions to surreal transformations." tiles={VFX} cols={5} cta={{ label: "Start generating", href: "/video" }} />
 
       {/* 5. Genjutsu */}
-      <section className="mt-16 rounded-3xl border border-line bg-black p-6 md:p-9">
+      <section className="mt-16 rounded-3xl border border-line bg-black p-4 sm:p-6 md:p-9">
         <span className="rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-sm font-semibold text-accent">✦ New model</span>
         <div className="mt-5 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <h2 className="text-4xl font-black uppercase tracking-tight text-accent md:text-5xl">Frameforge Genjutsu</h2>
+            <h2 className="text-3xl font-black uppercase tracking-tight text-accent sm:text-4xl md:text-5xl">Frameforge Genjutsu</h2>
             <p className="mt-2 max-w-2xl text-lg text-mute">Reality manipulation: keep the motion you filmed and swap the whole look while everything else stays as shot.</p>
           </div>
           <div className="flex gap-3">
@@ -203,7 +203,7 @@ export default function Explore() {
             <span className="mt-2 inline-block rounded-full bg-accent px-3 py-1 text-xs font-semibold text-black">Analyzing hooks</span>
           </div>
           <div className="relative text-center">
-            <div className="text-5xl font-black uppercase tracking-tight text-accent md:text-7xl">Director mode</div>
+            <div className="text-4xl font-black uppercase tracking-tight text-accent sm:text-5xl md:text-7xl">Director mode</div>
             <p className="mt-3 text-lg text-white/80">One agent for your entire creative stack</p>
             <Link href="/mcp" className={`${btn} mt-8 bg-white text-black shadow-[0_4px_0_#999]`}>
               Try Director mode
@@ -228,7 +228,7 @@ export default function Explore() {
             <Dot kind={k as "director"} />
           </div>
         ))}
-        <h2 className="relative text-4xl font-black uppercase leading-[0.95] tracking-tight md:text-6xl">
+        <h2 className="relative text-2xl font-black uppercase leading-[0.95] tracking-tight sm:text-4xl md:text-6xl">
           Use ChatGPT dots
           <br />
           with Frameforge MCP
@@ -247,7 +247,7 @@ export default function Explore() {
 
       {/* 12. More features */}
       <section className="mt-24 text-center">
-        <h2 className="text-4xl font-black uppercase tracking-tight md:text-6xl">Explore more AI features</h2>
+        <h2 className="text-3xl font-black uppercase tracking-tight sm:text-4xl md:text-6xl">Explore more AI features</h2>
         <div className="mx-auto mt-10 flex max-w-5xl flex-wrap justify-center gap-3">
           {FEATURE_CHIPS.map((c) => (
             <Link key={c.label} href={c.href} className="rounded-xl bg-panel px-5 py-2.5 text-lg text-white/80 transition-colors hover:bg-[#1d1d22] hover:text-white">

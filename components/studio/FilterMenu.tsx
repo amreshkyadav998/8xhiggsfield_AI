@@ -89,7 +89,7 @@ export default function FilterMenu({ kind, value, onChange }: { kind: Kind; valu
           )}
 
           {sub === "models" && (
-            <div className="absolute right-full top-0 mr-4 w-80 rounded-2xl border border-line bg-[#141417] p-2 shadow-2xl max-sm:right-0 max-sm:top-full max-sm:mr-0 max-sm:mt-2">
+            <div className="absolute right-full top-0 mr-4 w-80 rounded-2xl border border-line bg-[#141417] p-2 shadow-2xl max-sm:static max-sm:mr-0 max-sm:mt-2 max-sm:w-full max-sm:shadow-none">
               <div className="px-3 pb-2 pt-2 text-sm text-mute">Models</div>
               <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search models" className="mb-2 w-full rounded-xl bg-white/5 px-4 py-3 text-sm outline-none focus:bg-white/10" />
               <button className={rowCls()} onClick={() => set({ models: [] })}>
@@ -106,7 +106,7 @@ export default function FilterMenu({ kind, value, onChange }: { kind: Kind; valu
             </div>
           )}
           {sub === "date" && (
-            <div className="absolute right-full top-0 mr-4 rounded-2xl border border-line bg-[#141417] p-3 shadow-2xl max-sm:right-0 max-sm:top-full max-sm:mr-0 max-sm:mt-2">
+            <div className="absolute right-full top-0 mr-4 rounded-2xl border border-line bg-[#141417] p-3 shadow-2xl max-sm:static max-sm:mr-0 max-sm:mt-2 max-sm:w-full max-sm:shadow-none">
               <div className="px-2 pb-1 text-sm text-mute">Date</div>
               {(
                 [

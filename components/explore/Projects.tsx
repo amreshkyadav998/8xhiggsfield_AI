@@ -52,7 +52,7 @@ export default function Projects() {
   const [open, setOpen] = useState<Project | null>(null);
   return (
     <section id="projects" className="mt-16 scroll-mt-24">
-      <h2 className="text-3xl font-black uppercase tracking-tight text-accent md:text-4xl">Explore the inside of every project</h2>
+      <h2 className="text-2xl font-black uppercase tracking-tight text-accent sm:text-3xl md:text-4xl">Explore the inside of every project</h2>
       <p className="mt-1 text-mute">See every prompt and shot behind a project, then remix any of them.</p>
       <div className="relative mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {PROJECTS.map((p, n) => (

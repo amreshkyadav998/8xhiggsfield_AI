@@ -36,7 +36,7 @@ export default function Masonry({
     <section id={id} className="mt-16 scroll-mt-24">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-black uppercase tracking-tight text-accent md:text-4xl">{title}</h2>
+          <h2 className="text-2xl font-black uppercase tracking-tight text-accent sm:text-3xl md:text-4xl">{title}</h2>
           <p className="mt-1 text-mute">{sub}</p>
         </div>
         {cta && (

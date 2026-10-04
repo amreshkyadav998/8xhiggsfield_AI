@@ -6,7 +6,7 @@ import { useApp } from "@/lib/store";
 export default function Pricing() {
   const { user, setPlan, topUp } = useApp();
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12">
+    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-12">
       <div className="mb-6 rounded-xl bg-gradient-to-r from-pink-600 to-fuchsia-600 px-5 py-3 text-sm font-semibold">
         Launch offer: 50% off your first month on every paid plan
       </div>
@@ -44,7 +44,7 @@ export default function Pricing() {
         })}
       </div>
       {user && (
-        <div className="mt-8 flex items-center justify-between rounded-xl border border-line bg-panel p-5">
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-line bg-panel p-5">
           <div>
             <div className="font-medium">Top up credits</div>
             <div className="text-sm text-mute">Balance: {fmt(user.credits)} credits</div>

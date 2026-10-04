@@ -66,6 +66,26 @@ export default function Studio({ kind }: { kind: Kind }) {
   const [modelQ, setModelQ] = useState("");
   const [cols, setCols] = useState(4);
   const box = useRef<HTMLTextAreaElement>(null);
+  const bar = useRef<HTMLDivElement>(null);
+  const [barH, setBarH] = useState(220);
+  const [vw, setVw] = useState(1280);
+
+  // Keep results clear of the pinned prompt bar, whose height changes with wrapping and references.
+  useEffect(() => {
+    const el = bar.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setBarH(el.offsetHeight));
+    ro.observe(el);
+    const onResize = () => setVw(window.innerWidth);
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
+  // The slider sets desktop density; smaller screens cap the column count.
+  const effCols = Math.min(cols, vw < 640 ? 2 : vw < 900 ? 3 : vw < 1200 ? 4 : 6);
 
   useEffect(() => {
     try {
@@ -164,9 +184,9 @@ export default function Studio({ kind }: { kind: Kind }) {
   const filtered = activeCount(filters) > 0;
 
   return (
-    <div className="relative min-h-[calc(100vh-61px)] px-4 pb-64 pt-4 md:px-6">
+    <div className="relative min-h-[calc(100vh-61px)] px-3 pt-4 md:px-6" style={{ paddingBottom: barH + 40 }}>
       {/* Toolbar */}
-      <div className="flex items-center justify-end gap-3">
+      <div className="flex items-center justify-end gap-2 sm:gap-3">
         {running > 0 && <span className="mr-auto rounded-full bg-accent/10 px-3 py-1 text-xs text-accent">{running} generating…</span>}
         <FilterMenu kind={kind} value={filters} onChange={setFilters} />
         <label className="hidden h-11 items-center gap-3 rounded-xl border border-line bg-[#141417] px-4 sm:flex" title="Grid size">
@@ -178,7 +198,7 @@ export default function Studio({ kind }: { kind: Kind }) {
       {/* Feed or hero */}
       {items.length ? (
         <div className="mt-4">
-          <Feed items={items} cols={cols} onReuse={reuse} />
+          <Feed items={items} cols={effCols} onReuse={reuse} />
         </div>
       ) : filtered ? (
         <div className="mt-24 text-center text-mute">
@@ -193,25 +213,29 @@ export default function Studio({ kind }: { kind: Kind }) {
             {COPY[kind].hero.map(([t, i, k], idx) => (
               <div
                 key={idx}
-                className={`-mx-3 h-32 w-32 overflow-hidden border-4 border-white/15 shadow-2xl md:h-36 md:w-40 ${idx === 2 ? "rounded-full" : "rounded-2xl"}`}
+                className={`-mx-2 h-20 w-20 overflow-hidden border-[3px] border-white/15 shadow-2xl sm:-mx-3 sm:h-32 sm:w-32 sm:border-4 md:h-36 md:w-40 ${idx === 2 ? "rounded-full" : "rounded-2xl"}`}
                 style={{ transform: `rotate(${[-8, 4, -3, 6][idx]}deg) translateY(${[6, -4, 2, -2][idx]}px)`, zIndex: idx === 2 ? 3 : idx }}
               >
                 <Media item={byTopic(t, i, k)} ratio="1:1" width={300} />
               </div>
             ))}
           </div>
-          <h1 className="mt-8 text-3xl font-black uppercase leading-none tracking-tight md:text-4xl">
+          <h1 className="mt-8 text-2xl font-black uppercase leading-none tracking-tight sm:text-3xl md:text-4xl">
             Start creating with
             <br />
             <span className="text-accent">Frameforge {model.name}</span>
           </h1>
-          <p className="mt-3 text-lg text-mute">{COPY[kind].sub}</p>
+          <p className="mt-3 max-w-xl px-2 text-base text-mute sm:text-lg">{COPY[kind].sub}</p>
         </div>
       )}
 
       {/* Prompt bar */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-3 pb-3 md:px-6 md:pb-5">
-        <div className="pointer-events-auto mx-auto flex max-w-[1500px] gap-4 rounded-[28px] border border-line bg-[#141417]/95 p-4 shadow-[0_-10px_60px_rgba(0,0,0,.6)] backdrop-blur md:p-5 max-md:flex-col">
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-2 pb-2 sm:px-3 sm:pb-3 md:px-6 md:pb-5">
+        {/* No backdrop-filter below sm: it would trap the bottom-sheet dropdowns (position: fixed) inside the bar. */}
+        <div
+          ref={bar}
+          className="pointer-events-auto mx-auto flex max-w-[1500px] gap-3 rounded-3xl border border-line bg-[#141417] p-3 shadow-[0_-10px_60px_rgba(0,0,0,.6)] sm:gap-4 sm:rounded-[28px] sm:bg-[#141417]/95 sm:p-4 sm:backdrop-blur md:p-5 max-md:flex-col"
+        >
           <div className="min-w-0 flex-1">
             {refs.length > 0 && (
               <div className="mb-3 flex gap-2">
@@ -233,16 +257,16 @@ export default function Studio({ kind }: { kind: Kind }) {
               onKeyDown={(e) => {
                 if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && !short) submit();
               }}
-              rows={2}
+              rows={vw < 640 ? 1 : 2}
               maxLength={1000}
               placeholder={COPY[kind].placeholder}
               aria-label="Prompt"
-              className="w-full resize-none bg-transparent px-1 text-[17px] outline-none placeholder:text-mute"
+              className="w-full resize-none bg-transparent px-1 text-base outline-none placeholder:text-mute sm:text-[17px]"
             />
-            <div className="mt-3 flex flex-wrap items-center gap-2">
+            <div className="mt-2 flex flex-wrap items-center gap-1.5 sm:mt-3 sm:gap-2">
               {kind !== "audio" && (
                 <div className={`${chipCls()} gap-0 px-0`}>
-                  <label className="grid h-full cursor-pointer place-items-center px-4 text-xl" title="Add reference images">
+                  <label className="grid h-full cursor-pointer place-items-center px-3 text-xl sm:px-4" title="Add reference images">
                     +
                     <input type="file" accept="image/*" multiple className="sr-only" onChange={(e) => addRefs(e.target.files)} disabled={refs.length >= 4} />
                   </label>
@@ -250,7 +274,7 @@ export default function Studio({ kind }: { kind: Kind }) {
                   <Dropdown
                     className="w-80"
                     trigger={(_, toggle) => (
-                      <button onClick={toggle} className="grid h-12 place-items-center px-4 text-lg" title="Mention a character">
+                      <button onClick={toggle} className="grid h-10 place-items-center px-3 text-lg sm:h-12 sm:px-4" title="Mention a character">
                         @
                       </button>
                     )}
@@ -348,6 +372,7 @@ export default function Studio({ kind }: { kind: Kind }) {
 
               {kind === "image" && (
                 <Dropdown
+                  align="right"
                   className="w-60"
                   trigger={(open, toggle) => (
                     <button onClick={toggle} className={chipCls(open)} title="Quality">
@@ -370,6 +395,7 @@ export default function Studio({ kind }: { kind: Kind }) {
 
               {kind !== "audio" && (
                 <Dropdown
+                  align="right"
                   className="w-56"
                   trigger={(open, toggle) => (
                     <button onClick={toggle} className={chipCls(open)} title="Resolution">
@@ -393,6 +419,7 @@ export default function Studio({ kind }: { kind: Kind }) {
 
               {kind === "video" && (
                 <Dropdown
+                  align="right"
                   className="w-48"
                   trigger={(open, toggle) => (
                     <button onClick={toggle} className={chipCls(open)} title="Duration">
@@ -432,19 +459,19 @@ export default function Studio({ kind }: { kind: Kind }) {
           </div>
 
           {ready && !user ? (
-            <Link href={`/login?next=/${kind}`} className="grid shrink-0 place-items-center rounded-2xl bg-accent px-10 py-5 text-center font-bold text-black md:w-56">
-              <span className="text-xl">Sign in</span>
+            <Link href={`/login?next=/${kind}`} className="flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-accent px-6 py-3 text-center font-bold text-black md:grid md:w-56 md:py-5">
+              <span className="text-lg md:text-xl">Sign in</span>
               <span className="text-sm font-semibold">to generate · {fmt(charge)} credits</span>
             </Link>
           ) : (
-            <div className="flex shrink-0 flex-col items-center gap-1.5">
+            <div className="flex shrink-0 flex-col items-stretch gap-1.5 md:items-center">
             <button
               onClick={submit}
               disabled={!prompt.trim() || short}
               title={short ? `You need ${fmt(charge - user!.credits)} more credits` : "Ctrl/⌘ + Enter"}
-              className="grid shrink-0 place-items-center rounded-2xl bg-accent px-10 py-5 text-black shadow-[0_4px_0_#7a9400] transition-transform enabled:hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 md:w-56"
+              className="flex shrink-0 items-center justify-center gap-3 rounded-2xl bg-accent px-6 py-3 text-black shadow-[0_4px_0_#7a9400] transition-transform enabled:hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 md:grid md:w-56 md:gap-0 md:px-10 md:py-5"
             >
-              <span className="text-xl font-bold">Generate</span>
+              <span className="text-lg font-bold md:text-xl">Generate</span>
               <span className="flex items-center gap-1.5 text-base font-bold">
                 ✦ {list !== charge && <s className="font-semibold opacity-50">{fmt(list)}</s>} {fmt(charge)}
               </span>
