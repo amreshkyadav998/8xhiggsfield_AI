@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import { GENJUTSU_STYLES } from "@/lib/catalog";
-import { artUrl } from "@/lib/art";
+import { PromptMedia } from "@/components/Media";
+import { STYLE_FILTERS } from "@/lib/media";
 import { useApp } from "@/lib/store";
 import JobCard from "@/components/JobCard";
 import { GenerateButton } from "@/components/Generator";
@@ -38,7 +39,8 @@ export default function Genjutsu() {
       ratio: "16:9",
       seconds: secs,
       count: 1,
-      hue: GENJUTSU_STYLES.indexOf(style) * 20,
+      style,
+      source: file.url,
     });
     setError(r.ok ? "" : (r.error ?? ""));
   };
@@ -59,7 +61,7 @@ export default function Genjutsu() {
             className="grid aspect-video cursor-pointer place-items-center overflow-hidden rounded-2xl border-2 border-dashed border-line bg-panel text-center hover:border-mute"
           >
             {file ? (
-              <video src={file.url} className="h-full w-full object-cover" autoPlay muted loop playsInline />
+              <video src={file.url} className="h-full w-full object-cover" autoPlay muted loop playsInline style={{ filter: STYLE_FILTERS[style] }} />
             ) : (
               <span className="text-sm text-mute">
                 <span className="mb-2 block text-3xl">⇪</span>
@@ -91,8 +93,11 @@ export default function Genjutsu() {
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
             {GENJUTSU_STYLES.map((s, i) => (
               <button key={s} onClick={() => setStyle(s)} className={`relative aspect-square overflow-hidden rounded-lg border-2 ${style === s ? "border-accent" : "border-transparent"}`}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={artUrl(s, 2, false, i * 20)} alt="" className="h-full w-full object-cover" />
+                {file ? (
+                  <video src={file.url} muted autoPlay loop playsInline className="h-full w-full object-cover" style={{ filter: STYLE_FILTERS[s] }} />
+                ) : (
+                  <PromptMedia prompt="dancer motion" seed={i % 3} ratio="1:1" width={200} filter={STYLE_FILTERS[s]} />
+                )}
                 <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 p-1 text-[10px] font-semibold">{s}</span>
               </button>
             ))}

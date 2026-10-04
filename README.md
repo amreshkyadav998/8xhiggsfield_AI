@@ -9,7 +9,12 @@ A rebuild of the core Higgsfield workflow (prompt to image/video) for the 8x ass
 - **Accounts and credits**: sign up and log in, 50 free credits, a plan switcher and top-ups.
 
 ## What is simulated
-Generation is mocked on purpose. Output is procedural art seeded from the prompt (animated SVG for video), so there are no API keys or costs. Auth, credits and history live in `localStorage`. There are no real accounts or payments.
+Generation is mocked on purpose: there are no model API keys and no costs. A job runs through queued and rendering states, then returns **real stock media matched to the prompt**:
+- **Image and video:** prompts are scored against a keyword-tagged library of 220 free Unsplash photos and 176 Mixkit clips (`lib/media.json`, built by `scripts/build-media.mjs`). Each output links its source.
+- **Genjutsu:** it restyles *your uploaded clip* with a per-style visual filter. This is a preview of the effect, not a neural restyle.
+- **Audio:** it is real and plays in the browser. Voiceover reads your script with the Web Speech API, and Score synthesizes a seeded chord loop with Web Audio.
+
+Auth, credits and history live in `localStorage`. There are no real accounts or payments.
 
 ## Left out deliberately
 Community feed, image-to-video upload, real payments, and the ChatGPT/Claude MCP integration. The studio loop and credit clarity came first.

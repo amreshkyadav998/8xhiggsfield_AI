@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { MODELS, estimate, type Kind, type Ratio } from "./catalog";
+import { seedsFor } from "./media";
 
 export interface User {
   email: string;
@@ -21,6 +22,8 @@ export interface Job {
   durationMs: number;
   seeds: number[];
   hue?: number;
+  style?: string; // Genjutsu look
+  source?: string; // uploaded clip (blob URL, lives until reload)
   canceled?: boolean;
 }
 export type JobStatus = "queued" | "rendering" | "done" | "canceled";
@@ -114,7 +117,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         cost,
         startedAt: t,
         durationMs: m.seconds * 1000 * (m.kind === "video" ? p.seconds / 5 : 1) * 0.6 + 1500,
-        seeds: Array.from({ length: p.count }, () => Math.floor(Math.random() * 1e6)),
+        seeds: seedsFor(p.count),
       };
       setUser({ ...user, credits: user.credits - cost });
       setJobs((j) => [job, ...j]);

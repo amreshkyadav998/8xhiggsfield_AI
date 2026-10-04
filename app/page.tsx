@@ -1,11 +1,6 @@
 import Link from "next/link";
 import { EFFECTS, GENJUTSU_STYLES, INFLUENCER_STYLES, MODELS } from "@/lib/catalog";
-import { artUrl } from "@/lib/art";
-
-const Art = ({ seed, hue, prompt, className = "" }: { seed: number; hue: number; prompt: string; className?: string }) => (
-  // eslint-disable-next-line @next/next/no-img-element
-  <img src={artUrl(prompt, seed, true, hue)} alt="" className={`h-full w-full object-cover ${className}`} />
-);
+import { PromptMedia } from "@/components/Media";
 
 const TOOLS = [
   { href: "/video", kind: "Video", name: MODELS[2].name + " 2.5", tag: "TOP", desc: "The most advanced video model", icon: "▶" },
@@ -21,15 +16,15 @@ export default function Explore() {
       <section className="grid gap-4 lg:grid-cols-3">
         <Link href="/influencer" className="group">
           <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-line bg-panel p-5">
-            <div className="absolute inset-0 opacity-50">
-              <Art seed={11} hue={300} prompt="influencer" />
+            <div className="absolute inset-0 opacity-70">
+              <PromptMedia prompt="fashion portrait model" seed={3} ratio="16:10" width={900} />
             </div>
             <div className="relative w-fit rounded-xl border border-white/10 bg-black/60 p-3 backdrop-blur">
               <div className="mb-2 text-xs text-mute">Style · {INFLUENCER_STYLES.length}</div>
               <div className="grid grid-cols-3 gap-1.5">
                 {INFLUENCER_STYLES.slice(0, 6).map((s, i) => (
                   <span key={s} className="relative h-14 w-16 overflow-hidden rounded-lg">
-                    <Art seed={i} hue={i * 50} prompt={s} />
+                    <PromptMedia prompt={`${s} fashion outfit`} seed={i} ratio="4:5" width={160} />
                     <span className="absolute bottom-1 left-1.5 text-[10px] font-semibold">{s}</span>
                   </span>
                 ))}
@@ -42,7 +37,7 @@ export default function Explore() {
 
         <Link href="/genjutsu" className="group">
           <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-line">
-            <Art seed={4} hue={265} prompt="restyle" className="transition-transform duration-700 group-hover:scale-105" />
+            <PromptMedia prompt="neon city night street" kind="video" seed={1} className="transition-transform duration-700 group-hover:scale-105" />
             <span className="absolute bottom-4 left-5 text-3xl font-black">{GENJUTSU_STYLES.length} STYLES</span>
           </div>
           <h3 className="mt-3 font-black uppercase tracking-tight">Genjutsu restyle</h3>
@@ -65,7 +60,7 @@ export default function Explore() {
       {/* Promo + tools */}
       <section className="mt-10 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <Link href="/pricing" className="relative min-h-56 overflow-hidden rounded-2xl border border-line">
-          <Art seed={9} hue={150} prompt="promo" />
+          <PromptMedia prompt="mountain landscape epic" kind="video" seed={2} />
           <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent p-6">
             <div className="text-4xl font-black uppercase leading-none md:text-5xl">Unlimited Nano Pro</div>
             <div className="text-4xl font-black uppercase leading-none md:text-5xl">
@@ -104,7 +99,7 @@ export default function Explore() {
           {EFFECTS.map((e) => (
             <Link key={e.id} href={`/${e.kind}?effect=${e.id}`} className="group">
               <div className="relative aspect-[3/4] overflow-hidden rounded-xl border border-line">
-                <Art seed={7} hue={e.hue} prompt={e.prompt} className="transition-transform duration-500 group-hover:scale-105" />
+                <PromptMedia prompt={e.prompt} kind={e.kind} ratio="3:4" width={400} className="transition-transform duration-500 group-hover:scale-105" />
                 <span className="absolute left-2 top-2 rounded bg-black/60 px-1.5 py-0.5 text-[10px] uppercase">{e.kind}</span>
               </div>
               <div className="mt-2 text-sm font-medium">{e.name}</div>

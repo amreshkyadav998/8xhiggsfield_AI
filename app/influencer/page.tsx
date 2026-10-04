@@ -1,13 +1,13 @@
 "use client";
 import { useState } from "react";
 import { INFLUENCER_STYLES } from "@/lib/catalog";
-import { artUrl } from "@/lib/art";
+import { PromptMedia } from "@/components/Media";
 import { useApp } from "@/lib/store";
 import JobCard from "@/components/JobCard";
 import { GenerateButton } from "@/components/Generator";
 
 const LOOKS = ["Freckles", "Short hair", "Long curls", "Glasses", "Tattoos", "Buzz cut"];
-const COST = 4; // 4 portraits on Soul at 1 credit each, the "Free" tool is discounted
+const COST = 4; // 4 portraits on Nano Pro at 1 credit each
 
 export default function Influencer() {
   const { user, ready, jobs, generate } = useApp();
@@ -20,7 +20,7 @@ export default function Influencer() {
 
   const toggle = (l: string) => setLooks((x) => (x.includes(l) ? x.filter((y) => y !== l) : [...x, l]));
   const submit = () => {
-    const prompt = `AI influencer ${name.trim() || "Nova"}, ${style.toLowerCase()} outfit${looks.length ? ", " + looks.join(", ").toLowerCase() : ""}${vibe.trim() ? ", " + vibe.trim() : ""}`;
+    const prompt = `AI influencer ${name.trim() || "Nova"}, ${style.toLowerCase()} fashion portrait${looks.length ? ", " + looks.join(", ").toLowerCase() : ""}${vibe.trim() ? ", " + vibe.trim() : ""}`;
     const r = generate({ kind: "image", modelId: "nano", prompt, ratio: "4:5", seconds: 1, count: 4, hue: INFLUENCER_STYLES.indexOf(style) * 50 });
     setError(r.ok ? "" : (r.error ?? ""));
   };
@@ -41,8 +41,7 @@ export default function Influencer() {
           <div className="grid grid-cols-4 gap-2">
             {INFLUENCER_STYLES.map((s, i) => (
               <button key={s} onClick={() => setStyle(s)} className={`relative aspect-[3/4] overflow-hidden rounded-lg border-2 ${style === s ? "border-accent" : "border-transparent"}`}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={artUrl(s, i, false, i * 50)} alt="" className="h-full w-full object-cover" />
+                <PromptMedia prompt={`${s} fashion outfit`} seed={i} ratio="3:4" width={200} />
                 <span className="absolute bottom-1 left-1.5 text-[11px] font-semibold">{s}</span>
               </button>
             ))}
