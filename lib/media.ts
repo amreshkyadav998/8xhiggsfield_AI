@@ -85,3 +85,10 @@ export const STYLE_FILTERS: Record<string, string> = {
   Blueprint: "grayscale(1) sepia(1) hue-rotate(180deg) saturate(3)",
   "Pop Art": "saturate(2.6) contrast(1.5)",
 };
+
+/** A specific library item by topic, for curated showcase tiles. */
+export function byTopic(topicId: string, i: number, kind: "image" | "video"): MediaItem {
+  const t = TOPICS.find((x) => x.id === topicId) ?? TOPICS[0];
+  if (kind === "video") return { type: "video", ...t.videos[i % t.videos.length] };
+  return { type: "photo", ...t.photos[i % t.photos.length] };
+}

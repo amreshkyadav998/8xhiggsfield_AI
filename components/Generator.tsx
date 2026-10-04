@@ -17,11 +17,11 @@ const COPY: Record<Kind, { title: string; sub: string; placeholder: string }> = 
 
 export default function Generator({ kind }: { kind: Kind }) {
   const { user, ready, jobs, generate } = useApp();
-  const effectId = useSearchParams().get("effect");
-  const fx = EFFECTS.find((e) => e.id === effectId && e.kind === kind);
+  const params = useSearchParams();
+  const fx = EFFECTS.find((e) => e.id === params.get("effect") && e.kind === kind);
   const models = MODELS.filter((m) => m.kind === kind);
-  const [modelId, setModelId] = useState(models[0].id);
-  const [prompt, setPrompt] = useState(fx?.prompt ?? "");
+  const [modelId, setModelId] = useState(models.find((m) => m.id === params.get("model"))?.id ?? models[0].id);
+  const [prompt, setPrompt] = useState(fx?.prompt ?? params.get("prompt") ?? "");
   const [ratio, setRatio] = useState<Ratio>(kind === "image" ? "4:5" : "16:9");
   const [seconds, setSeconds] = useState(5);
   const [count, setCount] = useState(kind === "image" ? 2 : 1);

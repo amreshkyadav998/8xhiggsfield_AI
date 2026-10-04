@@ -35,7 +35,7 @@ export default function Mcp() {
       <h2 className="mb-3 mt-10 text-lg font-semibold">2. Ask for what you want</h2>
       <CodeBlock label="Example" code={`"Make three 5-second vertical clips of a coffee pour for TikTok, warm morning light. Use under 50 credits."`} />
 
-      <h2 className="mb-3 mt-10 text-lg font-semibold">Dots: specialist agents</h2>
+      <h2 id="dots" className="mb-3 mt-10 scroll-mt-24 text-lg font-semibold">Dots: specialist agents</h2>
       <div className="grid gap-3 sm:grid-cols-2">
         {DOTS.map(([t, d]) => (
           <div key={t} className="rounded-xl border border-line bg-panel p-4">
