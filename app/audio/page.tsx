@@ -1,12 +1,12 @@
 import { Suspense } from "react";
-import Generator from "@/components/Generator";
+import Studio from "@/components/studio/Studio";
 
 export const metadata = { title: "Audio - Frameforge" };
 
 export default function Page() {
   return (
     <Suspense>
-      <Generator kind="audio" />
+      <Studio kind="audio" />
     </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { MODELS, estimate, type Kind, type Ratio } from "./catalog";
+import { MODELS, fmt, price, type Kind, type Quality, type Ratio, type Res } from "./catalog";
 import { seedsFor } from "./media";
 
 export interface User {
@@ -25,7 +25,13 @@ export interface Job {
   style?: string; // Genjutsu look
   source?: string; // uploaded clip (blob URL, lives until reload)
   canceled?: boolean;
+  quality?: Quality;
+  res?: Res;
+  refs?: number; // reference images attached
 }
+/** Per-output flags, keyed by `${jobId}:${seed}`. */
+export type Marks = Record<string, { liked?: boolean; downloaded?: boolean }>;
+export const markKey = (j: Job, seed: number) => `${j.id}:${seed}`;
 export type JobStatus = "queued" | "rendering" | "done" | "canceled";
 
 export const jobStatus = (j: Job, now: number): { status: JobStatus; progress: number } => {
@@ -48,11 +54,14 @@ interface Ctx {
   remove: (id: string) => void;
   setPlan: (plan: string, credits: number) => void;
   topUp: (n: number) => void;
+  marks: Marks;
+  toggleLike: (key: string) => void;
+  markDownloaded: (key: string) => void;
 }
 const C = createContext<Ctx>(null as never);
 export const useApp = () => useContext(C);
 
-const K = { user: "hf.user", jobs: "hf.jobs" };
+const K = { user: "hf.user", jobs: "hf.jobs", marks: "hf.marks" };
 const read = <T,>(k: string, d: T): T => {
   try {
     const v = localStorage.getItem(k);
@@ -72,11 +81,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [now, setNow] = useState(() => Date.now());
+  const [marks, setMarks] = useState<Marks>({});
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setUser(read<User | null>(K.user, null));
     setJobs(read<Job[]>(K.jobs, []));
+    setMarks(read<Marks>(K.marks, {}));
     setReady(true);
   }, []);
   useEffect(() => {
@@ -89,6 +100,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (ready) write(K.jobs, jobs);
   }, [jobs, ready]);
+  useEffect(() => {
+    if (ready) write(K.marks, marks);
+  }, [marks, ready]);
 
   const signIn = useCallback((email: string, name?: string) => {
     const accounts = read<Record<string, User>>("hf.accounts", {});
@@ -107,9 +121,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     (p) => {
       if (!user) return { ok: false, error: "Sign in to generate" };
       const m = MODELS.find((x) => x.id === p.modelId)!;
-      const cost = estimate(m, p.seconds, p.count);
+      const cost = price(m, p).charge;
       if (!p.prompt.trim()) return { ok: false, error: "Describe what you want to see" };
-      if (user.credits < cost) return { ok: false, error: `Needs ${cost} credits, you have ${user.credits}` };
+      if (user.credits < cost) return { ok: false, error: `Needs ${fmt(cost)} credits, you have ${fmt(user.credits)}` };
       const t = Date.now();
       const job: Job = {
         ...p,
@@ -137,10 +151,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const remove = useCallback((id: string) => setJobs((all) => all.filter((x) => x.id !== id)), []);
   const setPlan = useCallback((plan: string, credits: number) => setUser((u) => (u ? { ...u, plan, credits: u.credits + credits } : u)), []);
   const topUp = useCallback((n: number) => setUser((u) => (u ? { ...u, credits: u.credits + n } : u)), []);
+  const toggleLike = useCallback((k: string) => setMarks((m) => ({ ...m, [k]: { ...m[k], liked: !m[k]?.liked } })), []);
+  const markDownloaded = useCallback((k: string) => setMarks((m) => ({ ...m, [k]: { ...m[k], downloaded: true } })), []);
 
   const value = useMemo(
-    () => ({ ready, user, jobs, now, signIn, signOut, generate, cancel, remove, setPlan, topUp }),
-    [ready, user, jobs, now, signIn, signOut, generate, cancel, remove, setPlan, topUp]
+    () => ({ ready, user, jobs, now, signIn, signOut, generate, cancel, remove, setPlan, topUp, marks, toggleLike, markDownloaded }),
+    [ready, user, jobs, now, signIn, signOut, generate, cancel, remove, setPlan, topUp, marks, toggleLike, markDownloaded]
   );
   return <C.Provider value={value}>{children}</C.Provider>;
 }

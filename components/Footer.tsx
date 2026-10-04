@@ -1,4 +1,6 @@
+"use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const COLS: [string, [string, string][]][] = [
   ["Create", [["AI Video", "/video"], ["AI Image", "/image"], ["Audio", "/audio"], ["AI Influencer", "/influencer"], ["Genjutsu Restyle", "/genjutsu"], ["Visual Effects", "/#vfx"]]],
@@ -7,7 +9,12 @@ const COLS: [string, [string, string][]][] = [
   ["Company", [["Pricing", "/pricing"], ["Enterprise", "/enterprise"], ["Sign in", "/login"]]],
 ];
 
+// Tool pages are full-height workspaces with a pinned prompt bar, so they skip the footer.
+const TOOLS = ["/image", "/video", "/audio"];
+
 export default function Footer() {
+  const path = usePathname();
+  if (TOOLS.includes(path)) return null;
   return (
     <footer className="mt-20">
       <div className="bg-accent px-6 py-14 text-black">

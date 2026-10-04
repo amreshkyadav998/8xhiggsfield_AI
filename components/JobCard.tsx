@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { waveUrl } from "@/lib/art";
-import { MODELS, ratioBox } from "@/lib/catalog";
+import { MODELS, fmt, ratioBox } from "@/lib/catalog";
 import { pick, photoUrl, STYLE_FILTERS, type MediaItem } from "@/lib/media";
 import { playScore, playVoice, stopAudio } from "@/lib/audio";
 import { jobStatus, useApp, type Job } from "@/lib/store";
@@ -15,7 +15,7 @@ export function downloadHref(item: MediaItem) {
   return item.type === "video" ? item.hd : photoUrl(item.src, "4:5", 1600);
 }
 
-function Output({ job, seed, onOpen }: { job: Job; seed: number; onOpen: () => void }) {
+export function Output({ job, seed, onOpen }: { job: Job; seed: number; onOpen: () => void }) {
   const [playing, setPlaying] = useState(false);
   const [sourceOk, setSourceOk] = useState(!!job.source);
   const box = ratioBox(job.ratio);
@@ -75,7 +75,7 @@ export default function JobCard({ job }: { job: Job }) {
         {job.kind === "video" && <span className="rounded bg-black/40 px-2 py-0.5">{job.seconds}s</span>}
         <span className="rounded bg-black/40 px-2 py-0.5">
           {status === "canceled" ? "refunded " : ""}
-          {job.cost} cr
+          {fmt(job.cost)} cr
         </span>
       </div>
 

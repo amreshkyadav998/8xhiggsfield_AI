@@ -5,19 +5,49 @@ export interface Model {
   name: string;
   kind: Kind;
   blurb: string;
-  cost: number; // credits (per image, or per second of video)
+  cost: number; // list credits per image, per second of video, or per audio clip
   seconds: number; // simulated render time
   durations?: number[];
+  tag?: string;
+  mark: string; // short glyph for the model picker
 }
 
 export const MODELS: Model[] = [
-  { id: "soul", name: "Soul", kind: "image", blurb: "Photoreal portraits and fashion", cost: 2, seconds: 5 },
-  { id: "nano", name: "Nano Pro", kind: "image", blurb: "Fast drafts, great for iterating", cost: 1, seconds: 3 },
-  { id: "seed", name: "Seedance", kind: "video", blurb: "Cinematic motion, 5-10s clips", cost: 3, seconds: 12, durations: [5, 8, 10] },
-  { id: "kling", name: "Kinetic", kind: "video", blurb: "Smooth camera moves", cost: 2, seconds: 9, durations: [5, 8] },
-  { id: "voice", name: "Voiceover", kind: "audio", blurb: "Natural narration from a script", cost: 2, seconds: 4 },
-  { id: "score", name: "Score", kind: "audio", blurb: "Original background music", cost: 3, seconds: 7 },
+  { id: "soul", name: "Soul 2.0", kind: "image", blurb: "Photoreal portraits and fashion", cost: 1.5, seconds: 5, mark: "S" },
+  { id: "soul-cinema", name: "Soul Cinema", kind: "image", blurb: "Film-grade stills with cinematic light", cost: 2, seconds: 6, tag: "NEW", mark: "SC" },
+  { id: "gpt-image", name: "GPT Image 2", kind: "image", blurb: "Near-perfect text rendering", cost: 2, seconds: 7, mark: "G" },
+  { id: "nano", name: "Nano Pro", kind: "image", blurb: "Fast drafts, great for iterating", cost: 1, seconds: 3, tag: "FAST", mark: "N" },
+  { id: "flux", name: "Flux 2", kind: "image", blurb: "Crisp detail, strong prompt adherence", cost: 1.5, seconds: 5, mark: "F" },
+  { id: "seedream", name: "Seedream 5", kind: "image", blurb: "Vivid color and stylized looks", cost: 1, seconds: 4, mark: "SD" },
+  { id: "seed", name: "Seedance 2.5", kind: "video", blurb: "Cinematic motion, 5-10s clips", cost: 3, seconds: 12, durations: [5, 8, 10], tag: "TOP", mark: "SE" },
+  { id: "kling", name: "Kinetic 3.0", kind: "video", blurb: "Smooth camera moves", cost: 2, seconds: 9, durations: [5, 8], mark: "K" },
+  { id: "veo", name: "Veo 3.1", kind: "video", blurb: "Realistic physics, native sound", cost: 4, seconds: 14, durations: [4, 8], mark: "V" },
+  { id: "sora", name: "Sora 2", kind: "video", blurb: "Long, coherent scenes", cost: 4, seconds: 15, durations: [5, 10], mark: "SO" },
+  { id: "wan", name: "WAN 2.6", kind: "video", blurb: "Budget-friendly motion", cost: 1, seconds: 8, durations: [5], mark: "W" },
+  { id: "voice", name: "Voiceover", kind: "audio", blurb: "Natural narration from a script", cost: 2, seconds: 4, mark: "VO" },
+  { id: "score", name: "Score", kind: "audio", blurb: "Original background music", cost: 3, seconds: 7, mark: "SC" },
 ];
+
+export const QUALITIES = ["Standard", "High"] as const;
+export type Quality = (typeof QUALITIES)[number];
+export const IMAGE_RES = ["1K", "2K", "4K"] as const;
+export const VIDEO_RES = ["720p", "1080p"] as const;
+export type Res = (typeof IMAGE_RES)[number] | (typeof VIDEO_RES)[number];
+
+/** Launch promo: every generation is billed at 75% of list. */
+export const PROMO = 0.75;
+const half = (x: number) => Math.max(0.5, Math.round(x * 2) / 2);
+
+/** Single source of truth for pricing. `charge` is what the button shows and what the store deducts. */
+export function price(m: Model, o: { seconds?: number; count?: number; quality?: Quality; res?: Res } = {}) {
+  const base = m.kind === "video" ? m.cost * (o.seconds ?? 5) : m.cost * (o.count ?? 1);
+  const q = o.quality === "High" ? 1.5 : 1;
+  const r = o.res === "2K" || o.res === "1080p" ? 1.3 : o.res === "4K" ? 2 : 1;
+  const list = half(base * q * r);
+  return { list, charge: half(list * PROMO) };
+}
+
+export const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 
 export const GENJUTSU_STYLES = [
   "Anime", "Claymation", "Watercolor", "Comic Book", "Pixel Art", "Noir", "Cyberpunk", "Oil Paint", "Ukiyo-e",
@@ -26,7 +56,7 @@ export const GENJUTSU_STYLES = [
 
 export const INFLUENCER_STYLES = ["Retro", "Sporty", "Y2K", "Theatrical", "Goth", "Clowncore", "Casual"];
 
-export const RATIOS = ["1:1", "16:9", "9:16", "4:5"] as const;
+export const RATIOS = ["1:1", "16:9", "9:16", "4:5", "3:4"] as const;
 export type Ratio = (typeof RATIOS)[number];
 
 export const ratioBox = (r: Ratio) => {
@@ -67,6 +97,3 @@ export const PLANS: Plan[] = [
   { id: "pro", name: "Pro", price: 29, credits: 600, perks: ["600 credits / month", "All models", "No watermark", "Priority queue"] },
   { id: "studio", name: "Studio", price: 79, credits: 2000, perks: ["2,000 credits / month", "Commercial license", "4 parallel jobs", "Team seats"] },
 ];
-
-export const estimate = (m: Model, seconds = 1, count = 1) =>
-  m.kind === "video" ? m.cost * seconds : m.cost * count;

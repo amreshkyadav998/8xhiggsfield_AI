@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { PLANS } from "@/lib/catalog";
+import { PLANS, fmt } from "@/lib/catalog";
 import { useApp } from "@/lib/store";
 
 export default function Pricing() {
@@ -47,7 +47,7 @@ export default function Pricing() {
         <div className="mt-8 flex items-center justify-between rounded-xl border border-line bg-panel p-5">
           <div>
             <div className="font-medium">Top up credits</div>
-            <div className="text-sm text-mute">Balance: {user.credits} credits</div>
+            <div className="text-sm text-mute">Balance: {fmt(user.credits)} credits</div>
           </div>
           <div className="flex gap-2">
             {[50, 200, 1000].map((n) => (

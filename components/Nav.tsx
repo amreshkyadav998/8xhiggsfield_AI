@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "@/lib/store";
+import { fmt } from "@/lib/catalog";
 
 const LINKS: { href: string; label: string; badge?: string }[] = [
   { href: "/", label: "Explore" },
@@ -85,7 +86,7 @@ export default function Nav() {
                     </div>
                     <div className="mx-3 my-1 flex items-center justify-between rounded-lg bg-black/40 px-3 py-2">
                       <span className="text-mute">Credits</span>
-                      <span className="font-semibold text-accent">{user.credits}</span>
+                      <span className="font-semibold text-accent">{fmt(user.credits)}</span>
                     </div>
                     <div className="px-3 pb-1 text-xs capitalize text-mute">Plan: {user.plan}</div>
                     {[

@@ -1,13 +1,13 @@
 "use client";
 import { useState } from "react";
-import { INFLUENCER_STYLES } from "@/lib/catalog";
+import { INFLUENCER_STYLES, MODELS, price } from "@/lib/catalog";
 import { PromptMedia } from "@/components/Media";
 import { useApp } from "@/lib/store";
 import JobCard from "@/components/JobCard";
-import { GenerateButton } from "@/components/Generator";
+import GenerateButton from "@/components/GenerateButton";
 
 const LOOKS = ["Freckles", "Short hair", "Long curls", "Glasses", "Tattoos", "Buzz cut"];
-const COST = 4; // 4 portraits on Nano Pro at 1 credit each
+const COST = price(MODELS.find((m) => m.id === "nano")!, { count: 4 }).charge;
 
 export default function Influencer() {
   const { user, ready, jobs, generate } = useApp();

@@ -1,13 +1,12 @@
 "use client";
 import { useState } from "react";
-import { GENJUTSU_STYLES } from "@/lib/catalog";
+import { GENJUTSU_STYLES, MODELS, price } from "@/lib/catalog";
 import { PromptMedia } from "@/components/Media";
 import { STYLE_FILTERS } from "@/lib/media";
 import { useApp } from "@/lib/store";
 import JobCard from "@/components/JobCard";
-import { GenerateButton } from "@/components/Generator";
+import GenerateButton from "@/components/GenerateButton";
 
-const COST_PER_SEC = 2;
 
 export default function Genjutsu() {
   const { user, ready, jobs, generate } = useApp();
@@ -15,7 +14,7 @@ export default function Genjutsu() {
   const [style, setStyle] = useState(GENJUTSU_STYLES[0]);
   const [error, setError] = useState("");
   const secs = Math.min(10, Math.max(1, Math.round(file?.secs ?? 5)));
-  const cost = COST_PER_SEC * secs;
+  const cost = price(MODELS.find((m) => m.id === "kling")!, { seconds: secs }).charge;
   const mine = jobs.filter((j) => j.prompt.startsWith("Restyle"));
 
   const onFile = (f: File | undefined) => {
@@ -34,7 +33,7 @@ export default function Genjutsu() {
     if (!file) return setError("Upload a clip first");
     const r = generate({
       kind: "video",
-      modelId: "kling", // 2 cr/s, must match COST_PER_SEC
+      modelId: "kling", // priced with the same model above
       prompt: `Restyle “${file.name}” as ${style}`,
       ratio: "16:9",
       seconds: secs,
