@@ -1,12 +1,12 @@
 import { Suspense } from "react";
-import Studio from "@/components/studio/Studio";
+import VideoTool from "./VideoTool";
 
 export const metadata = { title: "Video - Frameforge" };
 
 export default function Page() {
   return (
     <Suspense>
-      <Studio kind="video" />
+      <VideoTool />
     </Suspense>
   );
 }

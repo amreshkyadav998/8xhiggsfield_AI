@@ -1,14 +1,14 @@
 "use client";
 import { useState } from "react";
 import { waveUrl } from "@/lib/art";
-import { MODELS, fmt, ratioBox } from "@/lib/catalog";
+import { MODELS, VOICES, fmt, ratioBox } from "@/lib/catalog";
 import { pick, photoUrl, STYLE_FILTERS, type MediaItem } from "@/lib/media";
-import { playScore, playVoice, stopAudio } from "@/lib/audio";
+import { playScore, playSource, playVoice, stopAudio } from "@/lib/audio";
 import { jobStatus, useApp, type Job } from "@/lib/store";
 import Media from "@/components/Media";
 
 export function jobMedia(job: Job, seed: number): MediaItem {
-  return pick(job.prompt, job.kind === "audio" ? "image" : job.kind, seed);
+  return pick(job.prompt, job.kind === "audio" ? "image" : job.kind, seed, job.topic);
 }
 
 export function downloadHref(item: MediaItem) {
@@ -25,7 +25,9 @@ export function Output({ job, seed, onOpen }: { job: Job; seed: number; onOpen: 
       if (playing) return stopAudio();
       setPlaying(true);
       const done = () => setPlaying(false);
-      if (job.modelId === "voice") playVoice(job.prompt, seed, done);
+      const v = VOICES.find((x) => x.id === job.voice);
+      if (job.source) playSource(job.source, v?.pitch ?? 1, done, () => setSourceOk(false));
+      else if (job.modelId === "voice") playVoice(job.prompt, v ? VOICES.indexOf(v) : seed, done, v && { ...v, rate: v.rate * (job.rate ?? 1) });
       else playScore(seed, done);
     };
     return (
@@ -35,7 +37,11 @@ export function Output({ job, seed, onOpen }: { job: Job; seed: number; onOpen: 
         <span className="absolute inset-0 grid place-items-center">
           <span className="grid h-12 w-12 place-items-center rounded-full bg-white text-lg text-black shadow-xl transition-transform group-hover:scale-110">{playing ? "■" : "▶"}</span>
         </span>
-        <span className="absolute bottom-2 left-2 rounded bg-black/60 px-1.5 py-0.5 text-[10px]">{job.modelId === "voice" ? "Voiceover" : "Score · 10s"}</span>
+        <span className="absolute bottom-2 left-2 rounded bg-black/60 px-1.5 py-0.5 text-[10px]">
+          {job.tool ?? (job.modelId === "voice" ? "Voiceover" : "Score · 10s")}
+          {job.voice ? ` · ${VOICES.find((x) => x.id === job.voice)?.name}` : ""}
+          {job.source && !sourceOk ? " · source expired" : ""}
+        </span>
       </button>
     );
   }

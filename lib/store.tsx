@@ -28,6 +28,11 @@ export interface Job {
   quality?: Quality;
   res?: Res;
   refs?: number; // reference images attached
+  tool?: string; // which tab made it, e.g. "Motion Control"
+  topic?: string; // forces the media library topic (presets, motions)
+  voice?: string; // VOICES id for speech and voice change
+  rate?: number; // speed multiplier on top of the voice default
+  units?: number; // billing units when they differ from output count (TTS length)
 }
 /** Per-output flags, keyed by `${jobId}:${seed}`. */
 export type Marks = Record<string, { liked?: boolean; downloaded?: boolean }>;
@@ -121,7 +126,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     (p) => {
       if (!user) return { ok: false, error: "Sign in to generate" };
       const m = MODELS.find((x) => x.id === p.modelId)!;
-      const cost = price(m, p).charge;
+      const cost = price(m, { ...p, count: p.units ?? p.count }).charge;
       if (!p.prompt.trim()) return { ok: false, error: "Describe what you want to see" };
       if (user.credits < cost) return { ok: false, error: `Needs ${fmt(cost)} credits, you have ${fmt(user.credits)}` };
       const t = Date.now();

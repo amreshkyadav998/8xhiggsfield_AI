@@ -8,13 +8,16 @@ export function stopAudio() {
   stopCurrent = null;
 }
 
-export function playVoice(text: string, seed: number, onEnd: () => void) {
+export function playVoice(text: string, seed: number, onEnd: () => void, opts?: { lang: string; pitch: number; rate: number }) {
   stopAudio();
   if (typeof speechSynthesis === "undefined") return onEnd();
   const u = new SpeechSynthesisUtterance(text.replace(/^[^:]{0,60}:\s*/, "").replace(/[“”"]/g, ""));
-  const voices = speechSynthesis.getVoices().filter((v) => v.lang.startsWith("en"));
-  if (voices.length) u.voice = voices[seed % voices.length];
-  u.rate = 0.98;
+  const all = speechSynthesis.getVoices();
+  const voices = all.filter((v) => v.lang.startsWith(opts?.lang ?? "en"));
+  const pool = voices.length ? voices : all.filter((v) => v.lang.startsWith("en"));
+  if (pool.length) u.voice = pool[seed % pool.length];
+  u.rate = opts?.rate ?? 0.98;
+  u.pitch = opts?.pitch ?? 1;
   u.onend = onEnd;
   u.onerror = onEnd;
   speechSynthesis.speak(u);
@@ -77,6 +80,27 @@ export function playScore(seed: number, onEnd: () => void) {
   stopCurrent = () => {
     clearTimeout(timer);
     ctx.close();
+    onEnd();
+  };
+}
+
+/** Plays an uploaded recording re-pitched by `factor` (Voice Change). preservesPitch=false shifts the pitch with the speed. */
+export function playSource(url: string, factor: number, onEnd: () => void, onError: () => void) {
+  stopAudio();
+  const a = new Audio(url);
+  a.preservesPitch = false;
+  a.playbackRate = factor;
+  a.onended = () => stopAudio();
+  a.onerror = () => {
+    onError();
+    stopAudio();
+  };
+  a.play().catch(() => {
+    onError();
+    stopAudio();
+  });
+  stopCurrent = () => {
+    a.pause();
     onEnd();
   };
 }

@@ -40,8 +40,9 @@ export function topicsFor(prompt: string): Topic[] {
 }
 
 /** The i-th distinct output for a prompt. Same prompt + seed always returns the same media. */
-export function pick(prompt: string, kind: Kind, seed: number): MediaItem {
-  const top = topicsFor(prompt);
+export function pick(prompt: string, kind: Kind, seed: number, topicId?: string): MediaItem {
+  const forced = topicId ? TOPICS.find((t) => t.id === topicId) : undefined;
+  const top = forced ? [forced] : topicsFor(prompt);
   // Mostly the best topic, with the runner-up mixed in for variety.
   const topic = top.length > 1 && seed % 3 === 2 ? top[1] : top[0];
   if (kind === "video") {

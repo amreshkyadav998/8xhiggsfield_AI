@@ -97,3 +97,64 @@ export const PLANS: Plan[] = [
   { id: "pro", name: "Pro", price: 29, credits: 600, perks: ["600 credits / month", "All models", "No watermark", "Priority queue"] },
   { id: "studio", name: "Studio", price: 79, credits: 2000, perks: ["2,000 credits / month", "Commercial license", "4 parallel jobs", "Team seats"] },
 ];
+
+export interface VideoPreset {
+  id: string;
+  name: string;
+  cat: "General" | "Camera" | "VFX" | "Framing";
+  prompt: string; // appended to the user's prompt
+  topic: string; // media library topic the preset renders from
+  i: number;
+}
+
+export const VIDEO_PRESETS: VideoPreset[] = [
+  { id: "general", name: "General", cat: "General", prompt: "", topic: "portrait", i: 0 },
+  { id: "dolly-in", name: "Dolly In", cat: "Camera", prompt: "slow dolly in", topic: "man", i: 2 },
+  { id: "crash-zoom", name: "Crash Zoom", cat: "Camera", prompt: "fast crash zoom", topic: "fashion", i: 4 },
+  { id: "orbit", name: "360 Orbit", cat: "Camera", prompt: "camera orbits the subject", topic: "dance", i: 4 },
+  { id: "fpv", name: "FPV Drone", cat: "Camera", prompt: "fpv drone flythrough", topic: "mountain", i: 3 },
+  { id: "handheld", name: "Handheld", cat: "Camera", prompt: "handheld documentary look", topic: "neon", i: 7 },
+  { id: "low-angle", name: "Hero Low Angle", cat: "Framing", prompt: "low angle hero shot", topic: "sport", i: 4 },
+  { id: "close-up", name: "Extreme Close-up", cat: "Framing", prompt: "extreme close-up", topic: "portrait", i: 5 },
+  { id: "wide", name: "Epic Wide", cat: "Framing", prompt: "epic wide establishing shot", topic: "desert", i: 1 },
+  { id: "explosion", name: "Explosion", cat: "VFX", prompt: "explosion erupts behind", topic: "fire", i: 0 },
+  { id: "smoke", name: "Color Smoke", cat: "VFX", prompt: "colored smoke bursts", topic: "smoke", i: 1 },
+  { id: "levitate", name: "Levitation", cat: "VFX", prompt: "subject levitates, zero gravity", topic: "space", i: 3 },
+  { id: "rain", name: "Neon Rain", cat: "VFX", prompt: "neon rain, wet reflections", topic: "rain", i: 2 },
+  { id: "snowstorm", name: "Snowstorm", cat: "VFX", prompt: "swirling snowstorm", topic: "snow", i: 4 },
+  { id: "wave", name: "Tidal Wave", cat: "VFX", prompt: "giant wave rises", topic: "ocean", i: 5 },
+  { id: "bloom", name: "Flower Bloom", cat: "VFX", prompt: "flowers bloom around the subject", topic: "flowers", i: 3 },
+];
+
+export const MOTIONS = [
+  { id: "dance", name: "Dance", topic: "dance", i: 0 },
+  { id: "run", name: "Run", topic: "sport", i: 0 },
+  { id: "walk", name: "Runway walk", topic: "fashion", i: 3 },
+  { id: "spin", name: "Spin", topic: "dance", i: 7 },
+  { id: "drive", name: "Drive", topic: "car", i: 6 },
+  { id: "surf", name: "Surf", topic: "ocean", i: 7 },
+];
+
+export const EDIT_LOOKS = ["None", "Noir", "Retro VHS", "Cyberpunk", "Watercolor", "Anime", "Oil Paint", "Pop Art"];
+
+export interface Voice {
+  id: string;
+  name: string;
+  desc: string;
+  lang: string; // BCP-47 prefix used to pick a system voice
+  pitch: number; // Web Speech pitch, also the playback factor for Voice Change
+  rate: number;
+  gender: "male" | "female";
+}
+
+export const VOICES: Voice[] = [
+  { id: "josh", name: "Josh", desc: "Warm, conversational", lang: "en-US", pitch: 0.9, rate: 1, gender: "male" },
+  { id: "anna", name: "Anna", desc: "Clear British narrator", lang: "en-GB", pitch: 1.1, rate: 0.95, gender: "female" },
+  { id: "leo", name: "Leo", desc: "Deep trailer voice", lang: "en-US", pitch: 0.6, rate: 0.9, gender: "male" },
+  { id: "mira", name: "Mira", desc: "Bright and upbeat", lang: "en-US", pitch: 1.3, rate: 1.08, gender: "female" },
+  { id: "kai", name: "Kai", desc: "Laid-back Aussie", lang: "en-AU", pitch: 1, rate: 1, gender: "male" },
+  { id: "ivy", name: "Ivy", desc: "Calm meditation guide", lang: "en-GB", pitch: 1.05, rate: 0.85, gender: "female" },
+];
+
+/** TTS is billed per started 400 characters of script. */
+export const ttsUnits = (chars: number) => Math.max(1, Math.ceil(chars / 400));
