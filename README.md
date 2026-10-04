@@ -1,5 +1,7 @@
 # Frameforge
 
+**Live:** https://8xhiggsfield-ai.vercel.app · **Repo:** https://github.com/amreshkyadav998/8xhiggsfield_AI
+
 A rebuild of the core Higgsfield workflow (prompt to image/video) for the 8x assignment. It is not a 1:1 copy of the UI. The product decisions are my own.
 
 ## What it does
