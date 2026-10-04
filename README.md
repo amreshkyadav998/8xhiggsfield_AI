@@ -5,10 +5,16 @@
 A rebuild of the core Higgsfield workflow (prompt to image/video) for the 8x assignment. It is not a 1:1 copy of the UI. The product decisions are my own.
 
 ## What it does
-- **Studio**: image and video modes, model picker, aspect ratio, duration or image count, and a live credit cost on the Generate button.
-- **Jobs**: queued, then rendering with progress, then done. Jobs survive reloads because status is derived from timestamps. Canceling a running job refunds its credits.
-- **Effects**: one-click presets that load a prompt and settings into the studio.
-- **Accounts and credits**: sign up and log in, 50 free credits, a plan switcher and top-ups.
+- **Explore**: a showcase of autoplaying presets. Clicking any tile opens the right tool with its prompt filled in.
+- **Image**: a full-canvas studio with a pinned prompt bar (reference images, @characters, model picker, auto aspect, quality, resolution, 1–4 outputs), a filter menu with a date-range calendar, likes and downloads, and a lightbox.
+- **Video**: Create (preset picker, references, extend a clip), Edit Video and Motion Control. History and How it works sit side by side.
+- **Audio**: Text to Speech (voice previews, speed, billing by script length), Voice Change (your recording, re-pitched) and Music.
+- **Creator Copilot ✨** (`/creator-copilot`): Brief → Analyze → Improve → Ready.
+  - Content-health score, with a "Why?" explanation for every category.
+  - Fixes you can apply, shown on an original-vs-recommended timeline.
+  - Hook rewrites, a submit checklist, and a link from any generated video.
+- **AI Influencer, Genjutsu restyle, Assets, Pricing, MCP / API docs, Enterprise.**
+- **Credits**: every button shows the exact (discounted) price it will charge, and canceling a render refunds it. Jobs survive reloads.
 
 ## What is simulated
 Generation is mocked on purpose: there are no model API keys and no costs. A job runs through queued and rendering states, then returns **real stock media matched to the prompt**:
