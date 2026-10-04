@@ -9,6 +9,7 @@ const LINKS: { href: string; label: string; badge?: string }[] = [
   { href: "/", label: "Explore" },
   { href: "/image", label: "Image" },
   { href: "/video", label: "Video" },
+  { href: "/creator-copilot", label: "Creator Copilot", badge: "✨ AI" },
   { href: "/audio", label: "Audio" },
   { href: "/mcp", label: "MCP" },
   { href: "/api-docs", label: "API", badge: "New" },
@@ -47,12 +48,13 @@ export default function Nav() {
         <Link href="/" aria-label="Frameforge home" className="shrink-0">
           <Logo />
         </Link>
-        <nav className="hidden items-center gap-0.5 text-[15px] xl:flex">
+        <nav className="hidden items-center gap-0 text-[14px] xl:flex 2xl:gap-0.5 2xl:text-[15px]">
           {LINKS.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 font-medium transition-colors hover:text-white ${active(l.href) ? (l.href === "/" ? "text-accent" : "bg-panel text-white") : "text-mute"}`}
+              aria-current={active(l.href) ? "page" : undefined}
+              className={`flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2 py-1.5 font-medium transition-colors hover:text-white 2xl:px-2.5 ${active(l.href) ? (l.href === "/" ? "text-accent" : "bg-panel text-white") : "text-mute"}`}
             >
               {l.label}
               {l.badge && <span className="rounded bg-accent/15 px-1.5 text-[11px] font-semibold text-accent">{l.badge}</span>}
@@ -65,7 +67,7 @@ export default function Nav() {
             Pricing
             <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-pink-600 px-1.5 text-[10px] font-bold text-white">50% OFF</span>
           </Link>
-          <Link href="/enterprise" className={`${pill} hidden md:flex`}>
+          <Link href="/enterprise" className={`${pill} hidden md:flex xl:hidden 2xl:flex`}>
             ✦ Enterprise
           </Link>
           <Link href="/assets" className={`${pill} hidden md:flex`}>
@@ -91,7 +93,9 @@ export default function Nav() {
                     <div className="px-3 pb-1 text-xs capitalize text-mute">Plan: {user.plan}</div>
                     {[
                       ["/assets", "My assets"],
+                      ["/creator-copilot", "Creator Copilot ✨"],
                       ["/pricing", "Buy credits"],
+                      ["/enterprise", "Enterprise"],
                     ].map(([h, l]) => (
                       <Link key={h} href={h} onClick={() => setMenu(false)} className="block rounded-lg px-3 py-2 hover:bg-black/40">
                         {l}
@@ -116,8 +120,15 @@ export default function Nav() {
       {mobile && (
         <nav className="grid grid-cols-2 gap-1 border-t border-line p-3 xl:hidden">
           {[...LINKS, { href: "/enterprise", label: "Enterprise" }, { href: "/assets", label: "Assets" }].map((l) => (
-            <Link key={l.href} href={l.href} onClick={() => setMobile(false)} className={`rounded-lg px-3 py-2 text-sm ${active(l.href) ? "bg-panel text-white" : "text-mute"}`}>
+            <Link
+              key={l.href}
+              href={l.href}
+              onClick={() => setMobile(false)}
+              aria-current={active(l.href) ? "page" : undefined}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm ${active(l.href) ? "bg-panel text-white" : "text-mute"}`}
+            >
               {l.label}
+              {"badge" in l && l.badge && <span className="rounded bg-accent/15 px-1 text-[10px] font-semibold text-accent">{l.badge}</span>}
             </Link>
           ))}
         </nav>

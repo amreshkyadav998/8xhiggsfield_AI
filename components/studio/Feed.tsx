@@ -163,6 +163,11 @@ function Lightbox({ items, index, onClose, onReuse }: { items: Item[]; index: nu
             {marks[key]?.liked ? "♥ Liked" : "♡ Like"}
           </button>
         </div>
+        {job.kind === "video" && (
+          <a href={`/creator-copilot?asset=${encodeURIComponent(`${job.id}:${seed}`)}`} className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-accent/40 bg-accent/5 py-2.5 text-sm font-semibold text-accent hover:bg-accent/10">
+            ✨ Analyze in Creator Copilot
+          </a>
+        )}
         <p className="mt-6 text-xs text-mute">
           Simulated output: {media.type === "photo" ? `photo by ${media.by} on Unsplash` : "clip from Mixkit"}.{" "}
           <a href={media.link} target="_blank" rel="noreferrer" className="underline">

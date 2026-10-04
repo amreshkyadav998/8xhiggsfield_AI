@@ -24,7 +24,10 @@ export default function Media({
   controls?: boolean;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
-  const [src, setSrc] = useState(item.type === "video" ? (hd ? item.hd : item.src) : "");
+  // Derive the URL from props (not state) so a reused <Media> follows item changes;
+  // only remember which HD URL failed so we can fall back to the 360p file.
+  const [failedHd, setFailedHd] = useState<string | null>(null);
+  const src = item.type === "video" ? (hd && failedHd !== item.hd ? item.hd : item.src) : "";
 
   useEffect(() => {
     const v = ref.current;
@@ -32,7 +35,7 @@ export default function Media({
     const io = new IntersectionObserver(([e]) => (e.isIntersecting ? v.play().catch(() => {}) : v.pause()), { threshold: 0.25 });
     io.observe(v);
     return () => io.disconnect();
-  }, []);
+  }, [src]);
 
   const style = { filter };
   if (item.type === "video")
@@ -46,7 +49,7 @@ export default function Media({
         playsInline
         controls={controls}
         preload="metadata"
-        onError={() => item.type === "video" && src !== item.src && setSrc(item.src)}
+        onError={() => item.type === "video" && src === item.hd && setFailedHd(item.hd)}
         className={`h-full w-full object-cover ${className}`}
         style={style}
       />
