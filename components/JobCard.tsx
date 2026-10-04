@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { artUrl } from "@/lib/art";
+import { artUrl, waveUrl } from "@/lib/art";
 import { MODELS, ratioBox } from "@/lib/catalog";
 import { jobStatus, useApp, type Job } from "@/lib/store";
 
@@ -11,6 +11,8 @@ export default function JobCard({ job }: { job: Job }) {
   const model = MODELS.find((m) => m.id === job.modelId)!;
   const box = ratioBox(job.ratio);
   const video = job.kind === "video";
+  const audio = job.kind === "audio";
+  const src = (seed: number) => (audio ? waveUrl(job.prompt, seed) : artUrl(job.prompt, seed, video, job.hue));
 
   return (
     <article className="rounded-xl border border-line bg-panel p-3">
@@ -35,7 +37,8 @@ export default function JobCard({ job }: { job: Job }) {
           {job.seeds.map((s, i) => (
             <button key={s} onClick={() => setOpen(i)} className="relative overflow-hidden rounded-lg" style={{ aspectRatio: box.css }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={artUrl(job.prompt, s, video, job.hue)} alt={job.prompt} className="h-full w-full object-cover" />
+              <img src={src(s)} alt={job.prompt} className="h-full w-full object-cover" />
+              {audio && <span className="absolute bottom-2 left-2 rounded bg-black/60 px-1.5 py-0.5 text-[10px]">♪ audio</span>}
               {video && <span className="absolute bottom-2 left-2 rounded bg-black/60 px-1.5 py-0.5 text-[10px]">▶ {job.seconds}s</span>}
             </button>
           ))}
@@ -60,7 +63,7 @@ export default function JobCard({ job }: { job: Job }) {
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/85 p-6" onClick={() => setOpen(null)} role="dialog" aria-label="Preview">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={artUrl(job.prompt, job.seeds[open], video, job.hue)}
+            src={src(job.seeds[open])}
             alt={job.prompt}
             className="max-w-full rounded-xl object-cover"
             style={{ aspectRatio: box.css, maxHeight: "85vh" }}

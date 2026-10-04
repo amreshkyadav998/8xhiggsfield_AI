@@ -42,3 +42,16 @@ export function artSvg(prompt: string, seed: number, animated: boolean, hueBase?
 
 export const artUrl = (prompt: string, seed: number, animated: boolean, hue?: number) =>
   `data:image/svg+xml;utf8,${encodeURIComponent(artSvg(prompt, seed, animated, hue))}`;
+
+export function waveSvg(prompt: string, seed: number) {
+  const r = rng(hash(prompt) ^ seed);
+  const hue = Math.floor(r() * 360);
+  let bars = "";
+  for (let i = 0; i < 48; i++) {
+    const h = 6 + r() * 70 * Math.sin((i / 48) * Math.PI);
+    bars += `<rect x="${i * 2 + 2}" y="${(50 - h / 2).toFixed(1)}" width="1.2" height="${h.toFixed(1)}" rx=".6" fill="hsl(${hue} 90% 65%)"/>`;
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><rect width="100" height="100" fill="hsl(${hue} 40% 8%)"/>${bars}</svg>`;
+}
+export const waveUrl = (prompt: string, seed: number) =>
+  `data:image/svg+xml;utf8,${encodeURIComponent(waveSvg(prompt, seed))}`;

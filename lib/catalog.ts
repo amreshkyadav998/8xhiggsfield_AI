@@ -1,4 +1,4 @@
-export type Kind = "image" | "video";
+export type Kind = "image" | "video" | "audio";
 
 export interface Model {
   id: string;
@@ -15,7 +15,16 @@ export const MODELS: Model[] = [
   { id: "nano", name: "Nano Pro", kind: "image", blurb: "Fast drafts, great for iterating", cost: 1, seconds: 3 },
   { id: "seed", name: "Seedance", kind: "video", blurb: "Cinematic motion, 5-10s clips", cost: 3, seconds: 12, durations: [5, 8, 10] },
   { id: "kling", name: "Kinetic", kind: "video", blurb: "Smooth camera moves", cost: 2, seconds: 9, durations: [5, 8] },
+  { id: "voice", name: "Voiceover", kind: "audio", blurb: "Natural narration from a script", cost: 2, seconds: 4 },
+  { id: "score", name: "Score", kind: "audio", blurb: "Original background music", cost: 3, seconds: 7 },
 ];
+
+export const GENJUTSU_STYLES = [
+  "Anime", "Claymation", "Watercolor", "Comic Book", "Pixel Art", "Noir", "Cyberpunk", "Oil Paint", "Ukiyo-e",
+  "Low Poly", "Sketch", "Vaporwave", "Paper Cut", "Neon Glow", "Retro VHS", "Stop Motion", "Blueprint", "Pop Art",
+];
+
+export const INFLUENCER_STYLES = ["Retro", "Sporty", "Y2K", "Theatrical", "Goth", "Clowncore", "Casual"];
 
 export const RATIOS = ["1:1", "16:9", "9:16", "4:5"] as const;
 export type Ratio = (typeof RATIOS)[number];

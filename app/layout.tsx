@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/lib/store";
 import Nav from "@/components/Nav";
+import CreditToast from "@/components/CreditToast";
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <footer className="border-t border-line px-6 py-6 text-xs text-mute">
             Frameforge is a demo rebuild for an assignment. Generation is simulated; no real models, payments or accounts.
           </footer>
+          <CreditToast />
         </AppProvider>
       </body>
     </html>

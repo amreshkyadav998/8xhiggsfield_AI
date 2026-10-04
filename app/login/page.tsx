@@ -6,7 +6,7 @@ import { useApp } from "@/lib/store";
 function Form() {
   const { signIn } = useApp();
   const router = useRouter();
-  const next = useSearchParams().get("next") || "/studio";
+  const next = useSearchParams().get("next") || "/image";
   const [mode, setMode] = useState<"signup" | "login">("signup");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");

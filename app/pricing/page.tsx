@@ -7,6 +7,9 @@ export default function Pricing() {
   const { user, setPlan, topUp } = useApp();
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
+      <div className="mb-6 rounded-xl bg-gradient-to-r from-pink-600 to-fuchsia-600 px-5 py-3 text-sm font-semibold">
+        Launch offer: 50% off your first month on every paid plan
+      </div>
       <h1 className="text-3xl font-bold">Pricing</h1>
       <p className="mt-1 text-mute">Credits pay for generations. Demo only: choosing a plan adds credits instantly and charges nothing.</p>
       <div className="mt-8 grid gap-4 md:grid-cols-3">
@@ -15,9 +18,10 @@ export default function Pricing() {
           return (
             <div key={p.id} className={`flex flex-col rounded-2xl border bg-panel p-6 ${p.id === "pro" ? "border-accent" : "border-line"}`}>
               <h2 className="font-semibold">{p.name}</h2>
-              <div className="mt-2 text-4xl font-bold">
-                ${p.price}
-                <span className="text-sm font-normal text-mute">/mo</span>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="text-4xl font-bold">${p.price / (p.price ? 2 : 1)}</span>
+                {p.price > 0 && <span className="text-mute line-through">${p.price}</span>}
+                <span className="text-sm text-mute">/mo</span>
               </div>
               <ul className="my-5 flex-1 space-y-2 text-sm text-mute">
                 {p.perks.map((k) => (

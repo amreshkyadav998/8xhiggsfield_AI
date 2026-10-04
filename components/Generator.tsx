@@ -9,45 +9,42 @@ import JobCard from "@/components/JobCard";
 const chip = (on: boolean) =>
   `flex-1 rounded-md border py-1.5 text-xs ${on ? "border-accent text-accent" : "border-line text-mute hover:text-white"}`;
 
-export default function Studio() {
+const COPY: Record<Kind, { title: string; sub: string; placeholder: string }> = {
+  image: { title: "Image", sub: "Stills from a prompt. Generate up to 4 at once.", placeholder: "Editorial portrait on a rooftop at golden hour, 35mm film grain…" },
+  video: { title: "Video", sub: "Cinematic clips, priced per second.", placeholder: "A lone astronaut walking through a neon-lit market in the rain…" },
+  audio: { title: "Audio", sub: "Voiceover from a script, or original music.", placeholder: "Warm, confident narrator: “Every frame tells a story…”" },
+};
+
+export default function Generator({ kind }: { kind: Kind }) {
   const { user, ready, jobs, generate } = useApp();
   const effectId = useSearchParams().get("effect");
-  const fx = EFFECTS.find((e) => e.id === effectId);
-  const [kind, setKind] = useState<Kind>(fx?.kind ?? "image");
-  const [modelId, setModelId] = useState(fx ? MODELS.find((m) => m.kind === fx.kind)!.id : "soul");
+  const fx = EFFECTS.find((e) => e.id === effectId && e.kind === kind);
+  const models = MODELS.filter((m) => m.kind === kind);
+  const [modelId, setModelId] = useState(models[0].id);
   const [prompt, setPrompt] = useState(fx?.prompt ?? "");
-  const [ratio, setRatio] = useState<Ratio>("16:9");
+  const [ratio, setRatio] = useState<Ratio>(kind === "image" ? "4:5" : "16:9");
   const [seconds, setSeconds] = useState(5);
-  const [count, setCount] = useState(2);
+  const [count, setCount] = useState(kind === "image" ? 2 : 1);
   const [error, setError] = useState("");
 
-  const models = MODELS.filter((m) => m.kind === kind);
   const model = MODELS.find((m) => m.id === modelId)!;
   const secs = kind === "video" ? seconds : 1;
-  const n = kind === "video" ? 1 : count;
+  const n = kind === "image" ? count : 1;
   const cost = estimate(model, secs, n);
   const short = !!user && user.credits < cost;
+  const mine = jobs.filter((j) => j.kind === kind);
 
-  const fixDuration = (id: string) => {
-    const m = MODELS.find((x) => x.id === id)!;
-    if (m.durations && !m.durations.includes(seconds)) setSeconds(m.durations[0]);
-  };
-  const pickKind = (k: Kind) => {
-    setKind(k);
-    const id = MODELS.find((x) => x.kind === k)!.id;
-    setModelId(id);
-    fixDuration(id);
-  };
   const pickModel = (id: string) => {
     setModelId(id);
-    fixDuration(id);
+    const m = MODELS.find((x) => x.id === id)!;
+    if (m.durations && !m.durations.includes(seconds)) setSeconds(m.durations[0]);
   };
   const submit = () => {
     const r = generate({
       kind,
       modelId,
       prompt: prompt.trim(),
-      ratio,
+      ratio: kind === "audio" ? "16:9" : ratio,
       seconds: secs,
       count: n,
       hue: fx && fx.prompt === prompt ? fx.hue : undefined,
@@ -56,32 +53,23 @@ export default function Studio() {
   };
 
   return (
-    <div className="mx-auto grid max-w-7xl gap-6 px-6 py-8 lg:grid-cols-[380px_1fr]">
+    <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 md:px-6 lg:grid-cols-[380px_1fr]">
       <section className="h-fit space-y-5 rounded-2xl border border-line bg-panel p-5 lg:sticky lg:top-20">
-        <div className="grid grid-cols-2 gap-1 rounded-lg bg-black/40 p-1 text-sm" role="tablist">
-          {(["image", "video"] as Kind[]).map((k) => (
-            <button
-              key={k}
-              role="tab"
-              aria-selected={kind === k}
-              onClick={() => pickKind(k)}
-              className={`rounded-md py-2 capitalize ${kind === k ? "bg-white font-semibold text-black" : "text-mute hover:text-white"}`}
-            >
-              {k}
-            </button>
-          ))}
+        <div>
+          <h1 className="text-xl font-bold">{COPY[kind].title}</h1>
+          <p className="text-xs text-mute">{COPY[kind].sub}</p>
         </div>
 
         <label className="block">
           <span className="mb-1.5 flex justify-between text-xs text-mute">
-            Prompt {fx && <span className="text-accent">from “{fx.name}”</span>}
+            {kind === "audio" ? "Script or description" : "Prompt"} {fx && <span className="text-accent">from “{fx.name}”</span>}
           </span>
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             rows={4}
             maxLength={500}
-            placeholder="A lone astronaut walking through a neon-lit market in the rain…"
+            placeholder={COPY[kind].placeholder}
             className="w-full resize-none rounded-lg border border-line bg-black/40 p-3 text-sm outline-none focus:border-accent"
           />
         </label>
@@ -107,18 +95,20 @@ export default function Studio() {
           </div>
         </div>
 
-        <div>
-          <span className="mb-1.5 block text-xs text-mute">Aspect ratio</span>
-          <div className="flex gap-1.5">
-            {RATIOS.map((r) => (
-              <button key={r} onClick={() => setRatio(r)} className={chip(ratio === r)}>
-                {r}
-              </button>
-            ))}
+        {kind !== "audio" && (
+          <div>
+            <span className="mb-1.5 block text-xs text-mute">Aspect ratio</span>
+            <div className="flex gap-1.5">
+              {RATIOS.map((r) => (
+                <button key={r} onClick={() => setRatio(r)} className={chip(ratio === r)}>
+                  {r}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
-        {kind === "video" ? (
+        {kind === "video" && (
           <div>
             <span className="mb-1.5 block text-xs text-mute">Duration</span>
             <div className="flex gap-1.5">
@@ -129,7 +119,8 @@ export default function Studio() {
               ))}
             </div>
           </div>
-        ) : (
+        )}
+        {kind === "image" && (
           <div>
             <span className="mb-1.5 block text-xs text-mute">Images</span>
             <div className="flex gap-1.5">
@@ -142,19 +133,7 @@ export default function Studio() {
           </div>
         )}
 
-        {ready && !user ? (
-          <Link href="/login?next=/studio" className="block rounded-xl bg-accent py-3 text-center font-semibold text-black">
-            Sign in to generate · {cost} credits
-          </Link>
-        ) : (
-          <button
-            onClick={submit}
-            disabled={!prompt.trim() || short}
-            className="w-full rounded-xl bg-accent py-3 font-semibold text-black enabled:hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            Generate · {cost} credits
-          </button>
-        )}
+        <GenerateButton ready={ready} signedIn={!!user} cost={cost} disabled={!prompt.trim() || short} onClick={submit} next={`/${kind}`} />
         {short && (
           <p className="text-xs text-red-400">
             You have {user!.credits} credits.{" "}
@@ -171,25 +150,64 @@ export default function Studio() {
       </section>
 
       <section>
-        <h2 className="mb-4 text-sm font-medium text-mute">{jobs.length ? `Your generations (${jobs.length})` : "Your generations"}</h2>
-        {jobs.length === 0 ? (
-          <div className="grid h-72 place-items-center rounded-2xl border border-dashed border-line text-center text-sm text-mute">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-sm font-medium text-mute">{mine.length ? `Recent ${kind} (${mine.length})` : `Recent ${kind}`}</h2>
+          <Link href="/assets" className="text-xs text-mute hover:text-white">
+            All assets →
+          </Link>
+        </div>
+        {mine.length === 0 ? (
+          <div className="grid h-72 place-items-center rounded-2xl border border-dashed border-line px-6 text-center text-sm text-mute">
             <div>
-              Nothing yet. Write a prompt, or start from an{" "}
-              <Link href="/effects" className="text-accent underline">
-                effect
+              Nothing yet. Write a prompt, or start from a look on{" "}
+              <Link href="/" className="text-accent underline">
+                Explore
               </Link>
               .
             </div>
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
-            {jobs.map((j) => (
+            {mine.map((j) => (
               <JobCard key={j.id} job={j} />
             ))}
           </div>
         )}
       </section>
     </div>
+  );
+}
+
+export function GenerateButton({
+  ready,
+  signedIn,
+  cost,
+  disabled,
+  onClick,
+  next,
+  label = "Generate",
+}: {
+  ready: boolean;
+  signedIn: boolean;
+  cost: number;
+  disabled: boolean;
+  onClick: () => void;
+  next: string;
+  label?: string;
+}) {
+  if (ready && !signedIn)
+    return (
+      <Link href={`/login?next=${next}`} className="block rounded-xl bg-accent py-3 text-center font-semibold text-black">
+        Sign in to {label.toLowerCase()} · {cost} credits
+      </Link>
+    );
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className="w-full rounded-xl bg-accent py-3 font-semibold text-black enabled:hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-40"
+    >
+      {label} · {cost} credits
+    </button>
   );
 }
